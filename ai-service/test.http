@@ -1,0 +1,11 @@
+POST https://ai-service.duckdns.org/api/store-post-data
+Content-Type: application/json
+
+{
+  "imageUrls": [],
+  "text": "User prompt:",
+  "metaData": {
+    "location": "Greenhouse 5",
+    "submittedBy": "user42"
+  }
+}

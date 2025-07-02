@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  a-service1:
+    image: garryrk/a-service1:tag
+    ports:
+      - "3002:3002"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+volumes:
+  redis-data:
