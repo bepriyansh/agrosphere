@@ -30,6 +30,7 @@ const ForgotPassword: React.FC = () => {
   const [showMessage, setShowMessage] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -40,9 +41,16 @@ const ForgotPassword: React.FC = () => {
 
   const handleSubmit = async (event: FormEvent<ForgotPasswordFormElement>) => {
     event.preventDefault();
-    
-    const emailValue = event.currentTarget.elements.email.value;
-    
+    setFormError(null);
+    const emailValue = event.currentTarget.elements.email.value.trim();
+    if (!emailValue) {
+      setFormError("Email is required.");
+      return;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailValue)) {
+      setFormError("Please enter a valid email address.");
+      return;
+    }
     try {
       setIsLoading(true);
       
@@ -194,6 +202,9 @@ const ForgotPassword: React.FC = () => {
 
                 {!showMessage ? (
                   <form onSubmit={handleSubmit}>
+                    {formError && (
+                      <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }}>{formError}</Alert>
+                    )}
                     <TextField
                       fullWidth
                       required

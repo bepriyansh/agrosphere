@@ -29,6 +29,7 @@ export default function SignUp() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const navigate = useNavigate(); 
   const { login } = useAuth();
@@ -40,17 +41,31 @@ export default function SignUp() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFormError(null);
+    setError(null);
+    if (!signupInfo.username.trim() || !signupInfo.email.trim() || !signupInfo.password.trim()) {
+      setFormError("All fields are required.");
+      return;
+    }
+    // Basic email format check
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(signupInfo.email)) {
+      setFormError("Please enter a valid email address.");
+      return;
+    }
+    if (signupInfo.password.length < 8) {
+      setFormError("Password must be at least 8 characters.");
+      return;
+    }
     setLoading(true);
-        setError(null);
-        try {
-          const authData = await signupApi(signupInfo);
-          login(authData);
-          navigate("/"); 
-        } catch (error) {
-          setError(error instanceof Error ? error.message : "Something went wrong");
-        }finally {
-          setLoading(false);
-        }
+    try {
+      const authData = await signupApi(signupInfo);
+      login(authData);
+      navigate("/"); 
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,9 +99,9 @@ export default function SignUp() {
           </Typography>
 
           <form onSubmit={handleSubmit}>
-            {error && (
+            {(formError || error) && (
               <Typography color="error" variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
-                {error}
+                {formError || error}
               </Typography>
             )}
             <TextField

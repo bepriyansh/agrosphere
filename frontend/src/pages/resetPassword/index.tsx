@@ -76,17 +76,20 @@ const ResetPassword = () => {
     }
   };
 
+  // Add form validation for password fields before API call
   const validatePasswords = (password: string, confirmPassword: string): boolean => {
+    if (!password || !confirmPassword) {
+      setPasswordError('Both password fields are required.');
+      return false;
+    }
     if (password.length < 8) {
       setPasswordError('Password must be at least 8 characters long.');
       return false;
     }
-    
     if (password !== confirmPassword) {
       setPasswordError('Passwords do not match.');
       return false;
     }
-    
     setPasswordError('');
     return true;
   };

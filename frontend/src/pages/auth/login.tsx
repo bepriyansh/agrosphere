@@ -24,6 +24,7 @@ export default function Login() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const navigate = useNavigate(); 
   const { login } = useAuth();
@@ -34,16 +35,20 @@ export default function Login() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    setLoading(true);
+    setFormError(null);
     setError(null);
+    if (!loginInfo.username.trim() || !loginInfo.password.trim()) {
+      setFormError("Username and password are required.");
+      return;
+    }
+    setLoading(true);
     try {
       const authData = await loginApi(loginInfo);
       login(authData);
       navigate("/"); 
     } catch (error) {
       setError(error instanceof Error ? error.message : "Something went wrong");
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -79,9 +84,9 @@ export default function Login() {
           </Typography>
 
           <form onSubmit={handleSubmit}>
-            {error && (
+            {(formError || error) && (
               <Typography color="error" variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
-                {error}
+                {formError || error}
               </Typography>
             )}
             <TextField
