@@ -37,7 +37,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { toggleLike, likingPosts, deletePost, deletingPosts } = usePost();
   const { user } = useAuth();
   
-  // Menu state for more options
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -86,10 +85,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           position: 'relative',
           opacity: isDeleting ? 0.4 : 1,
           transition: 'opacity 0.3s ease',
-          pointerEvents: isDeleting ? 'none' : 'auto' // Prevent all interactions
+          pointerEvents: isDeleting ? 'none' : 'auto'
         }}>
         
-        {/* Enhanced Loading overlay for deletion */}
         {isDeleting && (
           <Backdrop
             sx={{
@@ -140,8 +138,12 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
         <CardHeader
           avatar={<Avatar src={post.user.profilePicture} />}
-          action={ isOwner && 
-            (<IconButton onClick={handleMenuClick} disabled={isDeleting}>
+          action={isOwner && (
+            <IconButton
+              aria-label="more-options"
+              onClick={handleMenuClick}
+              disabled={isDeleting}
+            >
               <MoreVertIcon />
             </IconButton>
           )}
@@ -149,7 +151,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           subheader={timeAgo(post.createdAt)}
         />
         
-        {/* Menu for more options */}
         {isOwner && (
           <Menu
             anchorEl={anchorEl}
@@ -164,11 +165,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               horizontal: 'right',
             }}
           >
-              <MenuItem onClick={handleDelete} disabled={isDeleting}>
-                <DeleteIcon sx={{ mr: 1 }} />
-                Delete Post
-              </MenuItem>
-            {/* Add more menu items here if needed */}
+            <MenuItem onClick={handleDelete} disabled={isDeleting}>
+              <DeleteIcon sx={{ mr: 1 }} />
+              Delete Post
+            </MenuItem>
           </Menu>
         )}
 
@@ -177,27 +177,41 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             <PostCarousel images={post.images} />
           </CardMedia>
         )}
+        
         <CardContent>
           <FormattedText 
             text={post.description} 
             color="text.primary"
           />
         </CardContent>
+        
         <CardActions disableSpacing>
-          <IconButton 
-            onClick={handleLike} 
-            color={post.isLiked ? 'error' : 'default'} 
+          <IconButton
+            aria-label="like"
+            onClick={handleLike}
+            color={post.isLiked ? 'error' : 'default'}
             disabled={isLiking || isDeleting}
           >
             {post.isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           </IconButton>
           <Typography variant="body2">{post.totalLikes}</Typography>
-          <IconButton onClick={handleComment} disabled={isDeleting}>
+          
+          <IconButton
+            aria-label="comment"
+            onClick={handleComment}
+            disabled={isDeleting}
+          >
             <ChatBubbleOutlineIcon />
           </IconButton>
           <Typography variant="body2">{post.totalComments}</Typography>
+          
           <Box flexGrow={1} />
-          <IconButton onClick={handleShare} disabled={isDeleting}>
+          
+          <IconButton
+            aria-label="share"
+            onClick={handleShare}
+            disabled={isDeleting}
+          >
             <ShareIcon />
           </IconButton>
         </CardActions>
