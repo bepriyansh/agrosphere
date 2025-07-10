@@ -24,18 +24,25 @@ apiClient.interceptors.request.use(
     }
 );
 
+function emitApiError(message: string) {
+    window.dispatchEvent(new CustomEvent("api-error", { detail: message }));
+}
 
 apiClient.interceptors.response.use(
     (response) => {
         if (response.data && response.data.success === false) {
-            return Promise.reject(new Error(response.data.message || 'An unexpected error occurred.'));
+            const msg = response.data.message || 'An unexpected error occurred.';
+            emitApiError(msg);
+            return Promise.reject(new Error(msg));
         }
         return response;
     },
     (error) => {
+        let msg = 'A network error occurred.';
         if (axios.isAxiosError(error) && error.response) {
-            return Promise.reject(new Error(error.response.data.message || 'A server error occurred.'));
+            msg = error.response.data.message || 'A server error occurred.';
         }
-        return Promise.reject(new Error('A network error occurred.'));
+        emitApiError(msg);
+        return Promise.reject(new Error(msg));
     }
 );
