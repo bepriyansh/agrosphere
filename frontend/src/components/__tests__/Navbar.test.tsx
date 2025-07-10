@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Navbar from '../headers/nav';
 import { useAuth } from '../../auth/useAuth';
@@ -76,9 +76,20 @@ describe('Navbar Component', () => {
     vi.mocked(useAuth).mockReturnValue({ ...mockAuthContext, logout: logoutMock });
     render(<Navbar />);
     const avatarButton = screen.getByTestId('avatar-button');
-    fireEvent.click(avatarButton);
-    fireEvent.click(screen.getByText('Logout'));
-    await new Promise(resolve => setTimeout(resolve, 0));
+
+    await act(async () => {
+      fireEvent.click(avatarButton);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Logout'));
+    });
+
+    // Wait for any async operations to complete
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
     expect(logoutMock).toHaveBeenCalled();
   });
 });
