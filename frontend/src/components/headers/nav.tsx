@@ -87,6 +87,7 @@ const Navbar = () => {
             <IconButton
               onClick={handleClick}
               size="small"
+              data-testid="avatar-button"
               sx={{
                 p: 0,
                 border: '2px solid transparent',
